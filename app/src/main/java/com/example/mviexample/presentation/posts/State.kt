@@ -2,21 +2,19 @@ package com.example.mviexample.presentation.posts
 
 import com.example.mviexample.domain.model.Post
 
-// State
-/*
-data class PostsState(
-    val isLoading: Boolean = false,
-    val posts: List<Post> = emptyList(),
-    val error: String? = null
-)
-
-// Intent
-sealed class PostsIntent {
-    object LoadPosts : PostsIntent()
-    object Retry : PostsIntent()
+sealed interface PostsState {
+    data object Loading : PostsState
+    data class Success(val posts: List<Post>) : PostsState
+    data class Error(val message: String) : PostsState
 }
 
-// Effect (One-time events)
+sealed class PostsEvent {
+    object LoadPosts : PostsEvent()
+    object Retry : PostsEvent()
+    data class PostClicked(val post: Post) : PostsEvent()
+}
+
 sealed class PostsEffect {
     data class ShowError(val message: String) : PostsEffect()
-}*/
+    data class NavigateToPostDetail(val post: Post) : PostsEffect()
+}

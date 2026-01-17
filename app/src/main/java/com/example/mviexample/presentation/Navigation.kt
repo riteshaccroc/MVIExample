@@ -30,15 +30,14 @@ fun AppNavigation(navController: NavHostController) {
     ) {
         composable<PostsRoute> {
             PostsScreen(
-                onPostClick = { post ->
-                    navController.navigate(
-                        PostDetailRoute(
-                            id = post.id,
-                            userId = post.userId,
-                            title = post.title,
-                            body = post.body
-                        )
+                onNavigateToDetail = {
+                    val route = PostDetailRoute(
+                        id = it.id,
+                        userId = it.userId,
+                        title = it.title,
+                        body = it.body
                     )
+                    navController.navigate(route)
                 }
             )
         }

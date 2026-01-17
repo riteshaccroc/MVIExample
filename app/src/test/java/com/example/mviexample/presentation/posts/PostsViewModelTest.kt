@@ -32,43 +32,46 @@ class PostsViewModelTest {
     }
 
     @Test
-    fun `given success state, when LoadPosts intent is handled, then viewmodel emits correct states`() = runTest {
-        // Given
+    fun `given success result, when ViewModel is initialized, then emits Loading and Success states`() = runTest {
+        // Given a successful result from the use case
         val posts = listOf(Post(1, 123, "title", "body"))
         coEvery { getPostsUseCase() } returns Result.success(posts)
 
-        // When
+        // When the ViewModel is created
         viewModel = PostsViewModel(getPostsUseCase)
 
-        // Then
+        // Then the state flow should emit Loading, then Success
         viewModel.state.test {
-            // With Unconfined dispatcher, we miss the initial state and start with the loading state
-            assertEquals(PostsState(isLoading = true), awaitItem())
-            assertEquals(PostsState(isLoading = false, posts = posts), awaitItem())
+            // The ViewModel's initial state is Loading, emitted immediately.
+            assertEquals(PostsState.Loading, awaitItem())
+            // After the use case returns, the state becomes Success.
+            assertEquals(PostsState.Success(posts), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `given failure state, when LoadPosts intent is handled, then viewmodel emits correct states and effect`() = runTest {
-        // Given
+    fun `given failure result, when ViewModel is initialized, then emits Loading and Error states and a ShowError effect`() = runTest {
+        // Given a failure result from the use case
         val errorMessage = "Error fetching posts"
         coEvery { getPostsUseCase() } returns Result.failure(RuntimeException(errorMessage))
 
-        // When
+        // When the ViewModel is created
         viewModel = PostsViewModel(getPostsUseCase)
 
-        // Then
+        // Then the state flow should emit Loading then Error, and the effect flow should emit ShowError
         launch {
             viewModel.state.test {
-                // With Unconfined dispatcher, we miss the initial state and start with the loading state
-                assertEquals(PostsState(isLoading = true), awaitItem())
-                assertEquals(PostsState(isLoading = false, error = errorMessage), awaitItem())
+                // The ViewModel's initial state is Loading.
+                assertEquals(PostsState.Loading, awaitItem())
+                // After the use case fails, the state becomes Error.
+                assertEquals(PostsState.Error(errorMessage), awaitItem())
                 cancelAndIgnoreRemainingEvents()
             }
         }
         launch {
             viewModel.effect.test {
+                // A ShowError effect is also emitted on failure.
                 assertEquals(PostsEffect.ShowError(errorMessage), awaitItem())
                 cancelAndIgnoreRemainingEvents()
             }
