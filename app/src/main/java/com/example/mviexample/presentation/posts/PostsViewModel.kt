@@ -2,20 +2,20 @@ package com.example.mviexample.presentation.posts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mviexample.domain.usecase.GetPostsUseCase
+import com.example.mviexample.domain.usecase.GetPostUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
-
 @HiltViewModel
 class PostsViewModel @Inject constructor(
-    private val getPostsUseCase: GetPostsUseCase
+    private val getPostsUseCase: GetPostUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<PostsState>(PostsState.Loading)
@@ -30,7 +30,7 @@ class PostsViewModel @Inject constructor(
 
     fun onEvent(event: PostsEvent) {
         when (event) {
-            is PostsEvent.LoadPosts, is PostsEvent.Retry -> loadPosts()
+            PostsEvent.LoadPosts, PostsEvent.Retry -> loadPosts()
             is PostsEvent.PostClicked -> {
                 viewModelScope.launch {
                     _effect.emit(PostsEffect.NavigateToPostDetail(event.post))
@@ -40,19 +40,16 @@ class PostsViewModel @Inject constructor(
     }
 
     private fun loadPosts() {
-        viewModelScope.launch {
-            _state.value = PostsState.Loading
+        getPostsUseCase()
+            .onEach { newState ->
+                // 1. Update the state with each emission from the use case flow.
+                _state.value = newState
 
-            getPostsUseCase().fold(
-                onSuccess = { posts ->
-                    _state.value = PostsState.Success(posts)
-                },
-                onFailure = { error ->
-                    val errorMessage = error.message ?: "Unknown error"
-                    _state.value = PostsState.Error(errorMessage)
-                    _effect.emit(PostsEffect.ShowError(errorMessage))
+                // 2. If the new state is an error, also emit a side effect.
+                if (newState is PostsState.Error) {
+                    _effect.emit(PostsEffect.ShowError(newState.message))
                 }
-            )
-        }
+            }
+            .launchIn(viewModelScope)
     }
 }
