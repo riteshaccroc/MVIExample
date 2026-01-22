@@ -80,36 +80,31 @@ fun PostsScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            // With a sealed state, you can use a when expression for exhaustive checks
-            when (val currentState = state) {
-                is PostsState.Loading -> {
-                    CircularProgressIndicator(
+            val data = state.data
+            if (state.isLoading && data.isNullOrEmpty()) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            } else if (data != null) {
+                if (data.isEmpty()) {
+                    Text(
+                        text = "No posts available",
                         modifier = Modifier.align(Alignment.Center)
                     )
-                }
-
-                is PostsState.Error -> {
-                    ErrorContent(
-                        message = currentState.message,
-                        onRetry = { viewModel.onEvent(PostsEvent.Retry) }
+                } else {
+                    PostsList(
+                        posts = data,
+                        onPostClick = { post ->
+                            viewModel.onEvent(PostsEvent.PostClicked(post))
+                        }
                     )
                 }
-
-                is PostsState.Success -> {
-                    if (currentState.posts.isEmpty()) {
-                        Text(
-                            text = "No posts available",
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    } else {
-                        PostsList(
-                            posts = currentState.posts,
-                            onPostClick = { post ->
-                                viewModel.onEvent(PostsEvent.PostClicked(post))
-                            }
-                        )
-                    }
+                if (state.isLoading) { // Refresh indicator
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
+            } else if (state.error.isNotEmpty()) {
+                ErrorContent(
+                    message = state.error,
+                    onRetry = { viewModel.onEvent(PostsEvent.Retry) }
+                )
             }
         }
     }
@@ -124,9 +119,9 @@ fun PostsList(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(posts) {
+        items(posts) { post ->
             PostItem(
-                post = it,
+                post = post,
                 onPostClick = onPostClick
             )
         }
