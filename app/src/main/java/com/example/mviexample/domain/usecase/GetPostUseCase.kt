@@ -1,24 +1,21 @@
 package com.example.mviexample.domain.usecase
 
-import com.example.mviexample.data.ApiStatus
+import androidx.paging.PagingData
+import androidx.paging.map
+import com.example.mviexample.data.remote.dto.post.toDomain
 import com.example.mviexample.domain.model.Post
 import com.example.mviexample.domain.repository.PostRepository
-import com.example.mviexample.presentation.posts.PostsState
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class GetPostUseCase @Inject constructor(
     private val postRepository: PostRepository
 ) {
-    operator fun invoke(): Flow<ApiStatus<List<Post>>> = flow {
-        emit(ApiStatus.Loading())
-
-        val result = postRepository.getPosts()
-
-        result.fold(
-            onSuccess = { posts -> emit(ApiStatus.Success(posts)) },
-            onFailure = { error -> emit(ApiStatus.Error(error.message ?: "Unknown error")) }
-        )
+    operator fun invoke(): Flow<PagingData<Post>> {
+        return postRepository.getPosts()
+            .map { pagingData ->
+                pagingData.map { it.toDomain() }
+            }
     }
 }

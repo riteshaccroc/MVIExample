@@ -5,8 +5,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.mviexample.domain.model.Poke
 import com.example.mviexample.domain.model.Post
 import com.example.mviexample.presentation.detail.PostDetailScreen
+import com.example.mviexample.presentation.pokemon.PokeScreen
 import com.example.mviexample.presentation.posts.PostsScreen
 import com.example.mviexample.presentation.webview.CartScreen
 import com.example.mviexample.presentation.webview.WebViewSafeScreen
@@ -22,6 +24,9 @@ object WebViewRoute
 object CartRoute
 
 @Serializable
+object PokeRoute
+
+@Serializable
 data class PostDetailRoute(
     val id: Int,
     val userId: Int,
@@ -33,7 +38,7 @@ data class PostDetailRoute(
 fun AppNavigation(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = WebViewRoute
+        startDestination = PostsRoute
     ) {
         composable<PostsRoute> {
             PostsScreen(
@@ -71,7 +76,10 @@ fun AppNavigation(navController: NavHostController) {
 
         composable<CartRoute> {
             CartScreen()
-//            WebviewScreen()
+        }
+
+        composable<PokeRoute> {
+            PokeScreen(){}
         }
     }
 }

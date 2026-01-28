@@ -1,17 +1,21 @@
 package com.example.mviexample.presentation.posts
 
+import androidx.paging.PagingData
 import com.example.mviexample.domain.model.Post
+import kotlinx.coroutines.flow.Flow
 
-/*sealed interface PostsState {
-    data object Loading : PostsState
-    data class Success(val posts: List<Post>) : PostsState
-    data class Error(val message: String) : PostsState
-}*/
+sealed interface PostsIntent {
+    object LoadPosts : PostsIntent
+}
 
-sealed class PostsEvent {
-    object LoadPosts : PostsEvent()
-    object Retry : PostsEvent()
-    data class PostClicked(val post: Post) : PostsEvent()
+data class PostsState(
+    val posts: Flow<PagingData<Post>>? = null
+)
+
+/*sealed class PostsIntent {
+    object LoadPosts : PostsIntent()
+    object Retry : PostsIntent()
+    data class PostClicked(val post: Post) : PostsIntent()
 }
 
 sealed class PostsEffect {
@@ -21,6 +25,7 @@ sealed class PostsEffect {
 
 data class PostsState(
     var isLoading: Boolean = false,
-    var data: List<Post>? = null,
+    val data: PagingData<Post> = PagingData.empty(),
     var error: String = ""
-)
+)*/
+

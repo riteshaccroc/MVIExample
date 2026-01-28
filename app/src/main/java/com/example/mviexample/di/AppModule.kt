@@ -1,7 +1,10 @@
 package com.example.mviexample.di
 
-import com.example.mviexample.data.remote.ApiService
+import com.example.mviexample.data.remote.service.ApiService
+import com.example.mviexample.data.remote.service.PokeApiService
+import com.example.mviexample.data.repository.PokeRepositoryImpl
 import com.example.mviexample.data.repository.PostRepositoryImpl
+import com.example.mviexample.domain.repository.PokeRepository
 import com.example.mviexample.domain.repository.PostRepository
 import dagger.Module
 import dagger.Provides
@@ -34,5 +37,21 @@ object AppModule {
     @Singleton
     fun providePostRepository(apiService: ApiService): PostRepository {
         return PostRepositoryImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun providePokeRetrofit(): PokeApiService {
+        return Retrofit.Builder()
+            .baseUrl(PokeApiService.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(PokeApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePokeRepository(pokeApiService: PokeApiService): PokeRepository {
+        return PokeRepositoryImpl(pokeApiService)
     }
 }

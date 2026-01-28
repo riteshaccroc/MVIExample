@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.mviexample.domain.model.Poke
 import com.example.mviexample.domain.model.Post
 
 @OptIn(ExperimentalMaterial3Api::class)

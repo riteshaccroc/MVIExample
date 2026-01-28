@@ -1,4 +1,4 @@
-package com.example.mviexample.presentation.posts
+package com.example.mviexample.presentation.pokemon
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,37 +37,40 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.example.mviexample.R
-import com.example.mviexample.domain.model.Post
+import com.example.mviexample.domain.model.Poke
+import com.example.mviexample.domain.model.Result
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostsScreen(
-    viewModel: PostsViewModel = hiltViewModel(),
-    onNavigateToDetail: (Post) -> Unit = {}
+fun PokeScreen(
+    viewModel: PokeViewModel = hiltViewModel(),
+    onNavigateToDetail: (Poke) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
-        viewModel.send(PostsIntent.LoadPosts)
-    }
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is PokeEffect.ShowError -> {
+                    snackbarHostState.showSnackbar(effect.message)
+                }
 
-    val lazyPagingItems = state.posts?.collectAsLazyPagingItems()
+                is PokeEffect.NavigateToPostDetail -> {
+                    onNavigateToDetail(effect.poke)
+                }
+            }
+        }
+    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Posts") },
+                title = { Text("Pokemons") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
@@ -77,59 +80,50 @@ fun PostsScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
-            contentAlignment = Alignment.Center
+                .padding(padding)
         ) {
-            when (val state = lazyPagingItems?.loadState?.refresh) {
-                is LoadState.Loading -> {
-                    CircularProgressIndicator()
+            val data = state.data
+            if (state.isLoading && data != null) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            } else if (data != null) {
+                if (data.equals("")) {
+                    Text(
+                        text = "No pokemon available",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                } else {
+                    PokeList(
+                        poke = data.results,
+                        onPostClick = { /*poke ->
+                            viewModel.onEvent(PokeEvent.PostClicked(poke))
+                        */}
+                    )
                 }
-
-                is LoadState.Error -> {
-                    ErrorContent("Something went wrong...") { lazyPagingItems.retry() }
+                if (state.isLoading) { // Refresh indicator
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
-
-                else -> {
-                    LazyColumn {
-                        lazyPagingItems?.let { items ->
-                            items(
-                                count = items.itemCount
-                            ) { index ->
-                                val post = items[index]
-                                post?.let { PostItem(post = it) {} }
-                            }
-
-                            if (lazyPagingItems.loadState.append is LoadState.Loading) {
-                                item {
-                                    Box(
-                                        Modifier.fillMaxWidth(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularProgressIndicator()
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            } else if (state.error.isNotEmpty()) {
+                ErrorContent(
+                    message = state.error,
+                    onRetry = { viewModel.onEvent(PokeEvent.Retry) }
+                )
             }
         }
-
     }
 }
 
 @Composable
-fun PostsList(
-    posts: List<Post>,
-    onPostClick: (Post) -> Unit
+fun PokeList(
+    poke: List<Result>,
+    onPostClick: (Result) -> Unit ={}
 ) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(posts) { post ->
-            PostItem(
-                post = post,
+        items(poke.size) {it->
+            PokeItem(
+                poke = poke[it],
                 onPostClick = onPostClick
             )
         }
@@ -137,11 +131,10 @@ fun PostsList(
 }
 
 @Composable
-fun PostItem(
-    post: Post,
-    onPostClick: (Post) -> Unit
+fun PokeItem(
+    poke: Result,
+    onPostClick: (Result) -> Unit
 ) {
-    val imageUrl = "https://picsum.photos/seed/${post.id}/200/200"
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -152,29 +145,14 @@ fun PostItem(
                 .padding(12.dp)
         ) {
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(imageUrl)
-                    .diskCacheKey(imageUrl)
-                    .memoryCacheKey(imageUrl)
-                    .size(200)
-                    .build(),
-                placeholder = painterResource(R.drawable.ic_launcher_background),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
-
-            /*AsyncImage(
-                model = "https://picsum.photos/seed/${post.id}/200/200",
+                model = poke.url,
                 contentDescription = null,
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .clickable { onPostClick(post) },
+                    .clickable { onPostClick(poke) },
                 contentScale = ContentScale.Crop
-            )*/
+            )
 
             Spacer(modifier = Modifier.width(12.dp))
 
@@ -182,20 +160,20 @@ fun PostItem(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = post.title,
+                    text = poke.name,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 2
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = post.body,
+                    text = poke.name,
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 3,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "User ID: ${post.userId}",
+                    text = "User ID: ${poke.name}",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -223,15 +201,5 @@ fun ErrorContent(
         Button(onClick = onRetry) {
             Text("Retry")
         }
-    }
-}
-
-@Composable
-fun ShowLoading() {
-    Box(
-        Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
     }
 }

@@ -1,7 +1,9 @@
 package com.example.mviexample.domain.repository
 
-import com.example.mviexample.domain.model.Post
+import androidx.paging.PagingData
+import com.example.mviexample.data.remote.dto.post.PostDto
+import kotlinx.coroutines.flow.Flow
 
 interface PostRepository {
-    suspend fun getPosts(): Result<List<Post>>
+    fun getPosts(): Flow<PagingData<PostDto>>
 }

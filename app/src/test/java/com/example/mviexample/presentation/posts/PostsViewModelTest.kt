@@ -1,21 +1,14 @@
 package com.example.mviexample.presentation.posts
 
-import app.cash.turbine.test
-import com.example.mviexample.domain.model.Post
 import com.example.mviexample.domain.usecase.GetPostUseCase
-import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class PostsViewModelTest {
