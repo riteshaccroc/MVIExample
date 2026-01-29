@@ -31,7 +31,10 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,7 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -181,15 +186,18 @@ fun PostItemHorizontal(post: Post) {
     }
 }
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 fun VideoPlayer(url: String) {
     val context = LocalContext.current
+    var playbackPosition by rememberSaveable { mutableLongStateOf(0L) }
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
             val mediaItem = MediaItem.fromUri(url)
             setMediaItem(mediaItem)
             prepare()
+            seekTo(playbackPosition)
             playWhenReady = true
         }
     }
@@ -199,7 +207,12 @@ fun VideoPlayer(url: String) {
             PlayerView(ctx).apply {
                 player = exoPlayer
                 useController = false
+                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
             }
+        },
+        update = { playerView ->
+            if( playerView.player !== exoPlayer)
+                playerView.player=exoPlayer
         },
         modifier = Modifier.padding(16.dp)
             .width(300.dp)
@@ -207,7 +220,10 @@ fun VideoPlayer(url: String) {
     )
 
     DisposableEffect(Unit) {
-        onDispose { exoPlayer.release() }
+        onDispose {
+            playbackPosition = exoPlayer.currentPosition
+            exoPlayer.release()
+        }
     }
 }
 
