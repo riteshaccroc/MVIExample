@@ -100,4 +100,9 @@ dependencies {
     //paging
     implementation("androidx.paging:paging-runtime:3.3.6")
     implementation("androidx.paging:paging-compose:3.4.0-rc01")
+
+    // For ExoPlayer
+    implementation("androidx.media3:media3-exoplayer:1.9.1") // Check for the latest version
+    // For the UI components (like PlayerView)
+    implementation("androidx.media3:media3-ui:1.9.1")
 }
