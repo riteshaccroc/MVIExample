@@ -1,11 +1,11 @@
-package com.example.mviexample.presentation.posts
+package com.example.mviexample.presentation.posts.mvi
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mviexample.data.ApiStatus
+import com.example.mviexample.common.ApiStatus
 import com.example.mviexample.domain.usecase.GetPostUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -22,7 +22,7 @@ class PostsViewModel @Inject constructor(
     private val getPostsUseCase: GetPostUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<PostsState>(PostsState())
+    private val _state = MutableStateFlow(PostsState())
     val state = _state.asStateFlow()
 
     private val _effect = MutableSharedFlow<PostsEffect>()
@@ -34,15 +34,21 @@ class PostsViewModel @Inject constructor(
 
     fun onEvent(event: PostsEvent) {
         when (event) {
-            PostsEvent.LoadPosts, PostsEvent.Retry -> loadPosts()
+            is PostsEvent.LoadPosts, PostsEvent.Retry -> loadPosts()
 
-            is PostsEvent.PostClicked -> viewModelScope.launch { _effect.emit(PostsEffect.NavigateToPostDetail(event.post)) }
+            is PostsEvent.PostClicked -> viewModelScope.launch {
+                _effect.emit(
+                    PostsEffect.NavigateToPostDetail(
+                        event.post
+                    )
+                )
+            }
         }
     }
 
     private fun loadPosts() {
         getPostsUseCase()
-            .flowOn(IO)
+            .flowOn(Dispatchers.IO)
             .onEach { newState ->
                 when (newState) {
                     is ApiStatus.Loading -> {

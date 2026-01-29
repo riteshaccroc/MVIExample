@@ -1,4 +1,4 @@
-package com.example.mviexample.presentation
+package com.example.mviexample.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -7,31 +7,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.mviexample.domain.model.Post
 import com.example.mviexample.presentation.detail.PostDetailScreen
-import com.example.mviexample.presentation.posts.PostsScreen
-import kotlinx.serialization.Serializable
-
-// Type-safe routes using Kotlin Serialization
-@Serializable
-object PostsRoute
-
-@Serializable
-data class PostDetailRoute(
-    val id: Int,
-    val userId: Int,
-    val title: String,
-    val body: String
-)
+import com.example.mviexample.presentation.posts.ui.PostsScreen
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = PostsRoute
+        startDestination = Routes.PostsRoute
     ) {
-        composable<PostsRoute> {
+        composable<Routes.PostsRoute> {
             PostsScreen(
                 onNavigateToDetail = {
-                    val route = PostDetailRoute(
+                    val route = Routes.PostDetailRoute(
                         id = it.id,
                         userId = it.userId,
                         title = it.title,
@@ -42,8 +29,8 @@ fun AppNavigation(navController: NavHostController) {
             )
         }
 
-        composable<PostDetailRoute> { backStackEntry ->
-            val detailRoute = backStackEntry.toRoute<PostDetailRoute>()
+        composable<Routes.PostDetailRoute> { backStackEntry ->
+            val detailRoute = backStackEntry.toRoute<Routes.PostDetailRoute>()
             val post = Post(
                 id = detailRoute.id,
                 userId = detailRoute.userId,

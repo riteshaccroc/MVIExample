@@ -1,4 +1,4 @@
-package com.example.mviexample.presentation.posts
+package com.example.mviexample.presentation.posts.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +41,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.mviexample.domain.model.Post
+import com.example.mviexample.presentation.posts.mvi.PostsEffect
+import com.example.mviexample.presentation.posts.mvi.PostsEvent
+import com.example.mviexample.presentation.posts.mvi.PostsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
