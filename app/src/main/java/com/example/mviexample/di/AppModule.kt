@@ -1,5 +1,6 @@
 package com.example.mviexample.di
 
+import com.example.mviexample.common.Constants.BASE_URL
 import com.example.mviexample.data.remote.ApiService
 import com.example.mviexample.data.repository.PostRepositoryImpl
 import com.example.mviexample.domain.repository.PostRepository
@@ -19,7 +20,7 @@ object AppModule {
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://jsonplaceholder.typicode.com/")
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
