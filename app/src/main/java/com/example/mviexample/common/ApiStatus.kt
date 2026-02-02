@@ -1,4 +1,4 @@
-package com.example.mviexample.data
+package com.example.mviexample.common
 
 sealed class ApiStatus<T>(val data:T? = null, val message:String? = null) {
     class Success<T>(data:T) : ApiStatus<T>(data)

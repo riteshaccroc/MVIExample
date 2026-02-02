@@ -95,6 +95,12 @@ dependencies {
 //    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.android)
 
+    // Room components
+    implementation("androidx.room:room-runtime:2.8.4") // Check for the latest version
+    implementation("androidx.room:room-ktx:2.8.4") // For Kotlin extensions and Flow support
+    ksp("androidx.room:room-compiler:2.8.4") // Use ksp for annotation processing
+
+
     // Testing
     testImplementation(libs.turbine)
     testImplementation(libs.mockk)

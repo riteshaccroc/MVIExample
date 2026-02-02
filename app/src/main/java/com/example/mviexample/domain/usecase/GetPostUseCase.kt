@@ -1,9 +1,8 @@
 package com.example.mviexample.domain.usecase
 
-import com.example.mviexample.data.ApiStatus
+import com.example.mviexample.common.ApiStatus
 import com.example.mviexample.domain.model.Post
 import com.example.mviexample.domain.repository.PostRepository
-import com.example.mviexample.presentation.posts.PostsState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

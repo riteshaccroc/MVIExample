@@ -1,12 +1,6 @@
-package com.example.mviexample.presentation.posts
+package com.example.mviexample.presentation.posts.mvi
 
 import com.example.mviexample.domain.model.Post
-
-/*sealed interface PostsState {
-    data object Loading : PostsState
-    data class Success(val posts: List<Post>) : PostsState
-    data class Error(val message: String) : PostsState
-}*/
 
 sealed class PostsEvent {
     object LoadPosts : PostsEvent()
