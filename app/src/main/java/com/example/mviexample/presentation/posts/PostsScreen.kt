@@ -14,8 +14,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,12 +48,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.mviexample.domain.model.Post
+import com.example.mviexample.presentation.components.CustomIconButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostsScreen(
     viewModel: PostsViewModel = hiltViewModel(),
-    onNavigateToDetail: (Post) -> Unit
+    onNavigateToDetail: (Post) -> Unit,
+    onNavigateToQuickScreen: (Post) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -57,8 +66,13 @@ fun PostsScreen(
                 is PostsEffect.ShowError -> {
                     snackbarHostState.showSnackbar(effect.message)
                 }
+
                 is PostsEffect.NavigateToPostDetail -> {
                     onNavigateToDetail(effect.post)
+                }
+
+                is PostsEffect.NavigateToQuickScreen -> {
+                    onNavigateToQuickScreen(effect.post)
                 }
             }
         }
@@ -94,10 +108,16 @@ fun PostsScreen(
                         posts = data,
                         onPostClick = { post ->
                             viewModel.onEvent(PostsEvent.PostClicked(post))
+                        },
+                        onQuickViewClick = { post ->
+                            viewModel.onEvent(PostsEvent.QuickViewClicked(post))
+                        },
+                        onAddToWishListClick = { post ->
+                            viewModel.onEvent(PostsEvent.AddToWishListClicked(post))
                         }
                     )
                 }
-                if (state.isLoading) { // Refresh indicator
+                if (state.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             } else if (state.error.isNotEmpty()) {
@@ -113,17 +133,29 @@ fun PostsScreen(
 @Composable
 fun PostsList(
     posts: List<Post>,
-    onPostClick: (Post) -> Unit
+    onPostClick: (Post) -> Unit,
+    onQuickViewClick: (Post) -> Unit,
+    onAddToWishListClick: (Post) -> Unit
 ) {
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+
     ) {
         items(posts) { post ->
-            PostItem(
+            PostImageItem(
+                post = post,
+                onPostClick = onPostClick,
+                onQuickViewClick = onQuickViewClick,
+                onAddToWishListClick = onAddToWishListClick
+            )
+            /*PostItem(
                 post = post,
                 onPostClick = onPostClick
-            )
+            )*/
         }
     }
 }
@@ -176,6 +208,39 @@ fun PostItem(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun PostImageItem(
+    post: Post,
+    onPostClick: (Post) -> Unit,
+    onQuickViewClick: (Post) -> Unit,
+    onAddToWishListClick: (Post) -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        AsyncImage(
+            model = "https://picsum.photos/seed/${post.id}/200/200",
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { onPostClick(post) },
+            contentScale = ContentScale.Crop
+        )
+        Column(
+            modifier = Modifier.padding(4.dp),
+            horizontalAlignment = Alignment.End
+        ) {
+            CustomIconButton(icon = Icons.Default.Add) { onQuickViewClick(post) }
+            CustomIconButton(icon = Icons.Default.Home) { onAddToWishListClick(post) }
         }
     }
 }

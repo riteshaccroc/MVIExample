@@ -12,11 +12,14 @@ sealed class PostsEvent {
     object LoadPosts : PostsEvent()
     object Retry : PostsEvent()
     data class PostClicked(val post: Post) : PostsEvent()
+    data class QuickViewClicked(val post: Post) : PostsEvent()
+    data class AddToWishListClicked(val post: Post) : PostsEvent()
 }
 
 sealed class PostsEffect {
     data class ShowError(val message: String) : PostsEffect()
     data class NavigateToPostDetail(val post: Post) : PostsEffect()
+    data class NavigateToQuickScreen(val post: Post) : PostsEffect()
 }
 
 data class PostsState(

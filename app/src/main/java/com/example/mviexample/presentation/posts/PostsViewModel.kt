@@ -36,7 +36,21 @@ class PostsViewModel @Inject constructor(
         when (event) {
             PostsEvent.LoadPosts, PostsEvent.Retry -> loadPosts()
 
-            is PostsEvent.PostClicked -> viewModelScope.launch { _effect.emit(PostsEffect.NavigateToPostDetail(event.post)) }
+            is PostsEvent.PostClicked -> viewModelScope.launch {
+                _effect.emit(
+                    PostsEffect.NavigateToPostDetail(
+                        event.post
+                    )
+                )
+            }
+            is PostsEvent.QuickViewClicked -> viewModelScope.launch {
+                _effect.emit(
+                    PostsEffect.NavigateToQuickScreen(
+                        event.post
+                    )
+                )
+            }
+            is PostsEvent.AddToWishListClicked -> {}//TODO:API call for add to wish list
         }
     }
 

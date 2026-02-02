@@ -8,6 +8,7 @@ import androidx.navigation.toRoute
 import com.example.mviexample.domain.model.Post
 import com.example.mviexample.presentation.detail.PostDetailScreen
 import com.example.mviexample.presentation.posts.PostsScreen
+import com.example.mviexample.presentation.posts.QuickViewScreen
 import kotlinx.serialization.Serializable
 
 // Type-safe routes using Kotlin Serialization
@@ -20,6 +21,13 @@ data class PostDetailRoute(
     val userId: Int,
     val title: String,
     val body: String
+)
+
+@Serializable
+data class QuickViewRoute(
+    //val item: Post,//TODO:not able to pass custom object,check
+    val item: String,
+    val sizeGridList: List<String>
 )
 
 @Composable
@@ -38,6 +46,15 @@ fun AppNavigation(navController: NavHostController) {
                         body = it.body
                     )
                     navController.navigate(route)
+                },
+                onNavigateToQuickScreen = { post ->
+                    val route = QuickViewRoute(
+                        item = post.title,
+                        sizeGridList = listOf(
+                            "XS", "S", "M", "L", "XL", "XXL", "XXXL"
+                        )
+                    )
+                    navController.navigate(route)
                 }
             )
         }
@@ -54,6 +71,14 @@ fun AppNavigation(navController: NavHostController) {
             PostDetailScreen(
                 post = post,
                 onBackClick = { navController.navigateUp() }
+            )
+        }
+
+        composable<QuickViewRoute> { backStackEntry ->
+            val quickRoute = backStackEntry.toRoute<QuickViewRoute>()
+            QuickViewScreen(
+                item = quickRoute.item,
+                sizeGridList = quickRoute.sizeGridList
             )
         }
     }
