@@ -65,7 +65,6 @@ fun QuickViewScreen(
             )
         }
 
-
         Spacer(modifier = Modifier.padding(8.dp))
 
         SelectableGrid(sizeGridList) { selectedItem ->

@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetPostsFromDbUseCase @Inject constructor(private val repository: PostRepository) {
-    operator fun invoke(): Flow<List<Post>> = repository.getPostsFromDb()
+//    operator fun invoke(): Flow<List<Post>> = repository.getPostsFromDb()
 }

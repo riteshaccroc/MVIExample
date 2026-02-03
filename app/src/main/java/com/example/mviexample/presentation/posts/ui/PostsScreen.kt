@@ -49,6 +49,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.mviexample.domain.model.Post
 import com.example.mviexample.presentation.components.CustomIconButton
+import com.example.mviexample.presentation.posts.mvi.PostsEffect
+import com.example.mviexample.presentation.posts.mvi.PostsEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

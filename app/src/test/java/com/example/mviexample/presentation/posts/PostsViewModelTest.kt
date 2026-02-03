@@ -3,7 +3,6 @@ package com.example.mviexample.presentation.posts
 import app.cash.turbine.test
 import com.example.mviexample.domain.model.Post
 import com.example.mviexample.domain.usecase.GetPostUseCase
-import com.example.mviexample.presentation.posts.mvi.PostsViewModel
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers

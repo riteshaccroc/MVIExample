@@ -9,7 +9,8 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class PostRepositoryImpl @Inject constructor(
-    private val apiService: ApiService, private val postDao: PostDao
+    private val apiService: ApiService,
+//    private val postDao: PostDao
 ) : PostRepository {
     override suspend fun getPosts(): Result<List<Post>> {
         return try {
@@ -21,9 +22,9 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getPostsFromDb(): Flow<List<Post>> = postDao.getAllIPosts()
-
-    override suspend fun insertAllPosts(postList: List<Post>) {
-        postDao.insertAllPosts(postList)
-    }
+//    override fun getPostsFromDb(): Flow<List<Post>> = postDao.getAllIPosts()
+//
+//    override suspend fun insertAllPosts(postList: List<Post>) {
+//        postDao.insertAllPosts(postList)
+//    }
 }

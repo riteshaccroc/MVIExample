@@ -7,7 +7,8 @@ import com.google.gson.annotations.SerializedName
 //TODO:check if it should be Post or PostDto
 @Entity(tableName = "posts")
 data class PostDto(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+//    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey
     @SerializedName("id") val postId: Int,
     @SerializedName("userId") val userId: Int,
     @SerializedName("title") val title: String,

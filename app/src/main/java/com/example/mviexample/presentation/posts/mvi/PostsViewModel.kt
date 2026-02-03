@@ -2,8 +2,11 @@ package com.example.mviexample.presentation.posts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mviexample.data.ApiStatus
+import com.example.mviexample.common.ApiStatus
 import com.example.mviexample.domain.usecase.GetPostUseCase
+import com.example.mviexample.presentation.posts.mvi.PostsEffect
+import com.example.mviexample.presentation.posts.mvi.PostsEvent
+import com.example.mviexample.presentation.posts.mvi.PostsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.MutableSharedFlow

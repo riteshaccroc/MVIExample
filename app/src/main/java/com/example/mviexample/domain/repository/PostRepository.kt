@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface PostRepository {
     suspend fun getPosts(): Result<List<Post>>
-    fun getPostsFromDb(): Flow<List<Post>>
-    suspend fun insertAllPosts(postList: List<Post>)
+//    fun getPostsFromDb(): Flow<List<Post>>
+//    suspend fun insertAllPosts(postList: List<Post>)
 }
