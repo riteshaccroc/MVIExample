@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mviexample.common.ApiStatus
 import com.example.mviexample.domain.usecase.GetPostUseCase
+import com.example.mviexample.domain.usecase.datastore.GetFirstTimeUseCase
+import com.example.mviexample.domain.usecase.datastore.GetPreferenceUseCase
+import com.example.mviexample.domain.usecase.datastore.SaveFirstTimeUseCase
+import com.example.mviexample.domain.usecase.datastore.SavePreferenceUseCase
 import com.example.mviexample.presentation.posts.mvi.PostsEffect
 import com.example.mviexample.presentation.posts.mvi.PostsEvent
 import com.example.mviexample.presentation.posts.mvi.PostsState
@@ -46,6 +50,7 @@ class PostsViewModel @Inject constructor(
                     )
                 )
             }
+
             is PostsEvent.QuickViewClicked -> viewModelScope.launch {
                 _effect.emit(
                     PostsEffect.NavigateToQuickScreen(
@@ -53,6 +58,7 @@ class PostsViewModel @Inject constructor(
                     )
                 )
             }
+
             is PostsEvent.AddToWishListClicked -> {}//TODO:API call for add to wish list
         }
     }

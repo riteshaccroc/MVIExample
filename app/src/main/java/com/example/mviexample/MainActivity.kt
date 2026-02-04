@@ -58,6 +58,7 @@ fun GreetingPreview() {
     }
 }
 
+/*
 const val PREFERENCES_NAME = "my_preferences"
 val EXAMPLE_COUNTER = intPreferencesKey("example_counter")
 private val USER_PREFERENCES_NAME = "user_preferences"
@@ -80,4 +81,4 @@ class MyPreferences(private val context: Context) {
             }
         }
     }
-}
+}*/

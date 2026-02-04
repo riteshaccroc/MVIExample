@@ -6,6 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.mviexample.domain.model.Post
+import com.example.mviexample.presentation.dataStore.FirstScreen
+import com.example.mviexample.presentation.dataStore.HomeScreen
 import com.example.mviexample.presentation.detail.PostDetailScreen
 import com.example.mviexample.presentation.posts.PostsScreen
 import com.example.mviexample.presentation.posts.QuickViewScreen
@@ -30,11 +32,17 @@ data class QuickViewRoute(
     val sizeGridList: List<String>
 )
 
+@Serializable
+object FirstScreenRoute
+
+@Serializable
+object HomeScreenRoute
+
 @Composable
 fun AppNavigation(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = PostsRoute
+        startDestination = FirstScreenRoute
     ) {
         composable<PostsRoute> {
             PostsScreen(
@@ -80,6 +88,16 @@ fun AppNavigation(navController: NavHostController) {
                 item = quickRoute.item,
                 sizeGridList = quickRoute.sizeGridList
             )
+        }
+
+        composable<FirstScreenRoute> {
+            FirstScreen(){
+                navController.navigate(HomeScreenRoute)
+            }
+        }
+
+        composable<HomeScreenRoute> {
+            HomeScreen()
         }
     }
 }
