@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.datastore.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -100,6 +101,8 @@ dependencies {
     implementation("androidx.room:room-ktx:2.8.4") // For Kotlin extensions and Flow support
     ksp("androidx.room:room-compiler:2.8.4") // Use ksp for annotation processing
 
+    // Preferences DataStore
+    implementation("androidx.datastore:datastore-preferences:1.2.0")
 
     // Testing
     testImplementation(libs.turbine)
