@@ -8,5 +8,5 @@ message AppParams {
   bool show_completed = 1;//number is the order of param in java file
   int32 startup_counter = 2;//int 32 integer
   int64 startup_timestamp = 3;//int 64 long
-  //string cookie = 4;
+  string cookie = 4;
 }

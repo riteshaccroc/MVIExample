@@ -23,6 +23,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import com.example.mviexample.data.dataStore.proto.AppParamsSerializer
 import com.example.mviexample.proto.AppParams
+import com.example.mviexample.proto.appParams
 import com.example.mviexample.ui.theme.MVIExampleTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.Flow
@@ -84,46 +85,70 @@ fun MainScreen() {
     ) {
         val context = LocalContext.current
 
-        /*val appParam: Flow<AppParams> =
-            context.appParamPref.data
-                .catch { exception ->
-                    // dataStore.data throws an IOException when an error is encountered when reading data
-                    if (exception is IOException) {
-                        Log.e("AppParams", "Error reading sort order preferences.", exception)
-                        emit(AppParams.getDefaultInstance())
-                    } else {
-                        throw exception
-                    }
-                }*/
-
-
         val userSettingsFlow: Flow<AppParams> =
             context.appParamPref.data.map { preferences ->
                 preferences
-                // Access the generated list property
             }
 
-        val startUp = runBlocking { userSettingsFlow.map { it-> it.startupCounter }.first().toString() }
-
+        val appParams = runBlocking { userSettingsFlow.first() }
 
         Text(text = "Old values")
         Spacer(modifier = Modifier.padding(16.dp))
-        Text(text = startUp)
+        Text(text = "appParams startupCounter: ${appParams.startupCounter}")
+        Spacer(modifier = Modifier.padding(4.dp))
+        Text(text = "appParams startupTimestamp: ${appParams.startupTimestamp}")
+        Spacer(modifier = Modifier.padding(4.dp))
+        Text(text = "appParams showCompleted: ${appParams.showCompleted}")
+        Spacer(modifier = Modifier.padding(4.dp))
+        Text(text = "appParams cookie: ${appParams.cookie}")
+        Spacer(modifier = Modifier.padding(4.dp))
         Spacer(modifier = Modifier.padding(16.dp))
-        Button(onClick = { runBlocking { saveAppParams(context) } }) { }
+        Button(onClick = { runBlocking { saveAppParamsCompleteObj1(context) } }) { Text("Data 1") }
+        Spacer(modifier = Modifier.padding(16.dp))
+        Button(onClick = { runBlocking { saveAppParamsCompleteObj2(context) } }) { Text("Data 2") }
+        Spacer(modifier = Modifier.padding(16.dp))
+        Button(onClick = { runBlocking { saveAppParamsOneObj(context) } }) { Text("Single Data update") }
+        Spacer(modifier = Modifier.padding(16.dp))
     }
 }
 
-suspend fun saveAppParams(context: Context) {
+suspend fun saveAppParamsCompleteObj1(context: Context) {
+
+    // update complete object
+    context.appParamPref.updateData {
+        appParams {
+            showCompleted = false
+            startupCounter = 1
+            startupTimestamp = System.currentTimeMillis()
+            cookie = "cookie data : 11111111111111111111111111111111"
+        }
+    }
+}
+
+suspend fun saveAppParamsCompleteObj2(context: Context) {
+    context.appParamPref.updateData {
+        // We ignore the current 'it' and return a brand new built object
+        AppParams.newBuilder()
+            .setShowCompleted(true)
+            .setStartupCounter(5)
+            .setStartupTimestamp(System.currentTimeMillis())
+            .setCookie("cookie data :99999999999999999999999")
+            .build()
+    }
+}
+
+suspend fun saveAppParamsOneObj(context: Context) {
+    //update one property at a time
     context.appParamPref.updateData { preferences ->
         preferences.toBuilder()
-            .clear()
-            .setStartupCounter(6)
-            .setShowCompleted(true)
-//            .set("05-02-2025 10:00")
+//            .clear()
+            .setStartupCounter(123)
+//            .setShowCompleted(true)
+            .setStartupTimestamp(123456)
             .build() // Build the updated object
     }
 }
+
 /*
 const val PREFERENCES_NAME = "my_preferences"
 val EXAMPLE_COUNTER = intPreferencesKey("example_counter")
